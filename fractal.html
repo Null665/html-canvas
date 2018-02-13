@@ -1,0 +1,207 @@
+<html>
+<head>
+    <script
+            src="https://code.jquery.com/jquery-3.2.0.min.js"
+            integrity="sha256-JAW99MJVpJBGcbzEuXk4Az05s/XyDdBomFqNlM3ic+I="
+            crossorigin="anonymous"></script>
+    <script type="application/javascript">
+        var n_steps = 0;
+
+        var random_color = false;
+        function deg2rad(deg) { return deg*(Math.PI/180);}
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++ ) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function clear()
+        {
+            ctx.clearRect(0,0,500,500);
+        }
+
+        $(window).bind('mousewheel DOMMouseScroll', function(event){
+            if (event.originalEvent.wheelDelta > 0 || event.originalEvent.detail < 0) {
+                if(n_steps>0)
+                {
+                    n_steps--;
+                    draw();
+                }
+            }
+            else {
+                if(n_steps<7)
+                {
+                    n_steps++;
+                    draw();
+                }
+            }
+            $("h1").text("steps = "+n_steps);
+        });
+
+        function init()
+        {
+            $("h1").text("steps = "+n_steps);
+
+            draw();
+        }
+
+        function draw() {
+            var canvas = document.getElementById('canvas');
+            if (canvas.getContext) {
+                var ctx = canvas.getContext("2d");
+                ctx.clearRect(0,0,500,500);
+                drawF(n_steps);
+            }
+
+            // Recursive draw
+            function drawF(step) {
+
+                ctx.save();
+                f_1(step,"#FF0000");
+                ctx.restore();
+                ctx.save();
+                f_2(step,"#00FF00");
+                ctx.restore();
+                ctx.save();
+                f_3(step,"#0000FF");
+                ctx.restore();
+                ctx.save();
+                f_4(step,"000000");
+                ctx.restore();
+
+            }
+
+            //  piesti figuros mazame kvadrate
+            function f_1(step, color)
+            {
+                ctx.transform(-0.25, 0, 0, 0.25, 250+125, 125);
+                ctx.rotate(deg2rad(-90));
+
+                if (step > 0) {
+                    step = step - 1;
+
+                    ctx.save();
+                    f_1(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_2(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_3(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_4(step, color);
+                    ctx.restore();
+
+                }
+                else drawT(color);
+            }
+
+            // Piesti mazesne figura po didesnes kampu
+            function f_2(step, color)
+            {
+                ctx.translate(250,250);
+                ctx.scale(0.5,0.5);
+                if (step > 0) {
+                    step = step - 1;
+
+
+                    ctx.save();
+                    f_1(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_2(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_3(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_4(step, color);
+                    ctx.restore();
+                }
+                else drawT(color);
+            }
+
+            // po figura
+            function f_3(step, color)
+            {
+                ctx.transform(0.5, 0, 0, 0.5, 250, 250);
+                ctx.rotate(deg2rad(90));
+                if (step > 0) {
+                    step = step - 1;
+
+
+                    ctx.save();
+                    f_1(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_2(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_3(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_4(step, color);
+                    ctx.restore();
+                }
+                else drawT(color);
+            }
+
+            // figuros viduje, kairiam virsutiniam kampe, pasukta
+            function f_4(step, color)
+            {
+                ctx.transform(-0.5, 0, 0, 0.5, 0, 0);
+                ctx.rotate(deg2rad(90));
+                if (step > 0) {
+                    step = step - 1;
+
+
+                    ctx.save();
+                    f_1(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_2(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_3(step, color);
+                    ctx.restore();
+                    ctx.save();
+                    f_4(step, color);
+                    ctx.restore();
+                }
+                else drawT(color);
+            }
+
+
+            function drawT(color) {
+                ctx.beginPath();
+                if(random_color)
+                    ctx.fillStyle = getRandomColor();
+                else
+                    ctx.fillStyle=color;
+                ctx.moveTo(0, 0);
+
+                ctx.lineTo(370,0);      // ->
+                ctx.lineTo(370,130);    // v
+                ctx.lineTo(250,130);    // <-
+                ctx.lineTo(250,250);    // v
+                ctx.lineTo(0,250);      // <-
+                ctx.lineTo(0,0);        // ^
+
+                ctx.fill();
+            }
+
+        }
+    </script>
+</head>
+<body onload="init();">
+<h1></h1>
+<canvas id="canvas" width="500" height="500" style="border: 1px solid black;"></canvas>
+<br>
+Use mouse scroll wheel to change the number of steps performed
+</body>
+</html>
